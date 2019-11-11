@@ -1,9 +1,9 @@
 var mysql = require('mysql');
 var connection = mysql.createConnection({
-    host     : 'localhost',
-    user     : 'root',
-    password : '',
-    database : 'meanstack'
+    host     : 'slecteddb.cenxy5zzeiun.us-east-2.rds.amazonaws.com',
+    user     : 'slectedAdminUser',
+    password : 'slectedAdminUser',
+    database : 'slectedbd'
 });
 
 connection.connect(function(err) {
