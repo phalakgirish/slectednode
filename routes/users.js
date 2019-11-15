@@ -216,20 +216,24 @@ router.post("/filter_cat_route",function(req,res,next){
 /*Add users skills*/
 router.post('/adduserskill',(req,res)=>{
 	//res.send('getSkill');
-	//console.log(req.body);
+	//console.log(req.body.candidateSkill.length);
+	//req.body.length
 	id=req.body;
-	//console.log(id.length);
-	for(let i=0; i<id.length;i++)
-	{
-		//console.log(id[i].candidateSkill);	
-		//console.log(id[i].user_id);
-		crud.data1("count(*)as cnt","userskill",`userskill_userid='${id[i].user_id}'AND userskill_skillid='${id[i].candidateSkill}'`,function(error,result){
+	// console.log(id.user_id);
+	// console.log(id.candidateSkill.user_id);
+
+
+	//console.log(req.body.length);
+	req.body.candidateSkill.forEach(function(value){
+	  //console.log(value.user_id);
+
+	  crud.data1("count(*)as cnt","userskill",`userskill_userid='${value.user_id}'AND userskill_skillid='${value.candidateSkill}'`,function(error,result){
 		//console.log(result[0].cnt);
 		if(!error)
 		{
 			if(result[0].cnt < 1)
 			{
-				crud.data2("userskill","userskill_userid,userskill_skillid",`'${id[i].user_id}','${id[i].candidateSkill}'`,function(error1,result1){
+				crud.data2("userskill","userskill_userid,userskill_skillid",`'${value.user_id}','${value.candidateSkill}'`,function(error1,result1){
 					//console.log(result);
 						if(!error1)
 						{
@@ -253,11 +257,17 @@ router.post('/adduserskill',(req,res)=>{
 		}	
 
 		})
+	});
+	// for(var m=0; m<3; m++)
+	// {
+	// 	//console.log(id[i].candidateSkill);	
+	// 	console.log(m);
+		
 
 
 
 		
-	}	
+	// }	
 
 	// crud.data2("userskill","userskill_userid,userskill_skillid",`'${req.body.user_id}','${req.body.candidateSkill}'`,function(error,result){
 	// 	//console.log(result);
@@ -271,6 +281,56 @@ router.post('/adduserskill',(req,res)=>{
 	// 		}	
 	// });
 
+});
+
+router.get('/compareData',(req,res)=>{
+	//res.send('getSkill');
+	//console.log(req.body);
+	id=req.body.user_id;
+	//console.log(id);
+	crud.data1("user_id,user_name,user_profileimg,rating_pro,rating_qual,rating_exp,rating_area,rating_avt,rating_salary,job_company,job_position","users,rating,job","user_id=rating_userid AND job_userid=user_id AND job_current='true'",function(error,result){
+		//console.log(result);
+		if(!error)
+		{
+			res.send(result);
+		}	
+		else
+		{
+			res.send(result);
+		}	
+
+	})
+});
+
+router.post('/FiltercompareData',(req,res)=>{
+	//res.send('getSkill');
+	//console.log(req.body);
+	id=req.body.rating_area;
+	//console.log(id);
+	// crud.data1("user_id,user_name,user_profileimg,rating_pro,rating_qual,rating_exp,rating_area,rating_avt,rating_salary,job_company,job_position",`users,rating,job","user_id=rating_userid AND job_userid=user_id AND job_current="true"`,function(error,result){
+	// 	//console.log(result);
+	// 	if(!error)
+	// 	{
+	// 		res.send(result);
+	// 	}	
+	// 	else
+	// 	{
+	// 		res.send(error);
+	// 	}	
+
+	// })
+	crud.data1("user_id,user_name,user_profileimg,rating_pro,rating_qual,rating_exp,rating_area,rating_avt,rating_salary,job_company,job_position","users,rating,job",`user_id=rating_userid AND job_userid=user_id AND job_current='true' AND rating_area='${id}'`,function(error,result){
+		//console.log(result);
+		if(!error)
+		{
+			res.send(result);
+		}	
+		else
+		{
+			res.send(result);
+		}	
+
+	})
 });
 
 router.post('/getuserskill',(req,res)=>{
@@ -317,13 +377,14 @@ router.get('/imgPath',(req,res)=>{
 
 	})
 });
-router.post('/getuserdata',(req,res,next)=>{
+router.post('/getuserdata',(req,res)=>{
 	//res.send('getSkill');
 	//console.log(req.body);
 	id=req.body;
 	//console.log(id);
 	crud.data1("user_id,user_name,user_email,rating_avt,rating_pro,rating_qual,rating_exp,rating_salary,user_bob,user_verify,user_salary,user_profileimg","rating,users",`user_id=rating_userid AND user_id='${req.body.user_id}'`,function(error,result){
 		//console.log(result);
+
 		if(!error)
 		{
 			res.send(result);
@@ -353,7 +414,7 @@ router.post('/adduserlocation',(req,res)=>{
 	id=req.body;
 	//console.log(id);
 	crud.data2("job","job_userid,job_company,job_position,job_period_from,job_period_to,job_current",`'${req.body.job_userid}','${req.body.job_company}','${req.body.job_position}','${req.body.job_period_from}','${req.body.job_period_to}','${req.body.job_current}'`,function(error,result){
-		//console.log(result);
+		console.log(result);
 			if(!error)
 			{
 				res.send(result);
@@ -391,7 +452,7 @@ router.post('/userprivousCompany',(req,res)=>{
 	//console.log(req.body);
 	id=req.body;
 	//console.log(id);
-	crud.data1("job_company,job_position,job_period_from,job_period_to,job_current","job",`job_current =' ' AND job_userid='${req.body.user_id}' ORDER BY job_id DESC`,function(error,result){
+	crud.data1("job_company,job_position,job_period_from,job_period_to,job_current","job",`job_current ='false' OR job_current ='' AND job_userid='${req.body.user_id}' ORDER BY job_id DESC`,function(error,result){
 		//console.log(result);
 		if(!error)
 		{
